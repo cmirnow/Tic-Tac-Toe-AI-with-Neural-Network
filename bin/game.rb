@@ -89,8 +89,8 @@ end
       fann_results_array = []
       unacceptable_moves_array = []
       array_of_moves_to_fork = []
+      attack_moves_array = []
       current_position = @game.board.to_s
-
       # Create a list of unacceptable moves and a list of moves leading to fork:
       CSV.foreach('ss.csv', headers: false) do |row|
         row.each do |e|
@@ -98,32 +98,37 @@ end
           if row[6].to_i - row[3].to_i == 2 && row[4] == 'O' && row[2].to_f != 0.4
             unacceptable_moves_array << row[0]
           end
-          unless row[5].nil?
-            array_of_moves_to_fork << row[0] if row[3].to_i == row[5].to_i
-          end
+          next if row[5].nil?
+          # Find moves that may lead to a fork:
+          array_of_moves_to_fork << row[0] if row[3].to_i == row[5].to_i
+          # Find attacking moves:
+          if row[3].to_i == row[5].to_i && row[6].to_i < 7
+            attack_moves_array << row[0]
+            end
         end
       end
 
+      print "\n"
       print "\n Unacceptable moves: " + unacceptable_moves_array.uniq.to_s + "\n"
       print "\n List of moves leading to fork: " + array_of_moves_to_fork.uniq.to_s + "\n"
+      print "\n Attack moves: " + attack_moves_array.uniq.to_s + "\n"
       print "\n"
 
       CSV.foreach('ss.csv', headers: false) do |row|
         row.each do |e|
           next unless e == current_position
-          next unless row[4] == 'O'
           unless unacceptable_moves_array.include? (row[0])
             if row[6].to_i - row[3].to_i == 1
               x_data.push([row[0].to_i])
               y_data.push([1])
-            elsif row[6].to_i - row[3].to_i == 3 || row[6].to_i - row[3].to_i == 5
-              if array_of_moves_to_fork.include? (row[0])
+            elsif row[6].to_i - row[3].to_i == 3
+              if attack_moves_array.include? (row[0])
+                x_data.push([row[0].to_i])
+                y_data.push([0.7])
+              elsif array_of_moves_to_fork.include? (row[0])
                 x_data.push([row[0].to_i])
                 y_data.push([0.3])
-              else
-                x_data.push([row[0].to_i])
-                y_data.push([0.5])
-              end
+            end
             else
               x_data.push([row[0].to_i])
               y_data.push([row[2].to_f])
@@ -145,7 +150,7 @@ end
         end
       rescue StandardError
         []
-        puts "\n AI sees no way to continue the game. :("
+        puts "\n AI sees no way to continue the game. :( Try deleting ss.csv and run the program again."
         exit
       end
 

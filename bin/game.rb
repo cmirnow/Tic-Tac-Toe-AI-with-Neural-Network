@@ -95,7 +95,7 @@ end
       CSV.foreach('ss.csv', headers: false) do |row|
         row.each do |e|
           next unless e == current_position
-          if row[6].to_i - row[3].to_i == 2 && row[4] == 'O' && row[2].to_f != 0.4
+          if row[6].to_i - row[3].to_i == 2 && row[4] == 'O' && row[2].to_f != 0.2
             unacceptable_moves_array << row[0]
           end
           next if row[5].nil?

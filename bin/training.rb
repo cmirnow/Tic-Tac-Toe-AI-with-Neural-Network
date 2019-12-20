@@ -23,9 +23,9 @@ resulting_array = []
   prioritization = []
   game.players_move_order.map do |i|
     prioritization << if i == game.check
-                        0.5
+                        0.3
                       elsif game.check == 'draw'
-                        0.4
+                        0.2
                       else
                         0.1
                       end

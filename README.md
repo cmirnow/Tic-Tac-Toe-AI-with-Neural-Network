@@ -13,7 +13,6 @@ cd Tic-Tac-Toe-AI-with-Neural-Network
 ruby start.rb
 ```
 
-This script does not know the strategies of Tic Tac Toe. After the first launch, the program creates a csv-file of records of Tic Tac Toe games played out by chance. Then, the Neural Network helps AI in finding the optimal moves.
-Can you beat the Tic-Tac-Toe-AI-with-Neural-Network? Good luck to you!
+This script does not know the strategies of Tic Tac Toe. After the first launch, the program creates a csv-file containing records of Tic Tac Toe games played out by chance. Then, the Neural Network helps AI to find the optimal moves. Can you beat the Tic-Tac-Toe-AI-with-Neural-Network? Good luck to you!
 
 [Description](https://blog.masterpro.ws/tic-tac-toe-ai-neural-network) (in Russian).

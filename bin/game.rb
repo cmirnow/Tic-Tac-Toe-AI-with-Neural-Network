@@ -3,7 +3,6 @@
 require 'ruby-fann'
 require 'csv'
 require_relative '../lib/game_board.rb'
-require_relative '../lib/player.rb'
 
 class Interface
   def initialize

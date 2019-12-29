@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 require 'csv'
-require_relative '../lib/game_board.rb'
-require_relative '../lib/player.rb'
 require_relative '../lib/interface.rb'
 
 total_number_moves = []

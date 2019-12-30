@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'game_board.rb'
+require_relative './game_board.rb'
 class Interface
   @spots
   @board_all

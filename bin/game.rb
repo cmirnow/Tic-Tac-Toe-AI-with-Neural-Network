@@ -101,7 +101,7 @@ end
           # Find moves that may lead to a fork:
           array_of_moves_to_fork << row[0] if row[3].to_i == row[5].to_i
           # Find attacking moves:
-          if row[3].to_i == row[5].to_i && row[6].to_i < 7
+          if row[3].to_i == row[5].to_i && row[6].to_i < 7 && row[0].to_i.odd?
             attack_moves_array << row[0]
             end
         end

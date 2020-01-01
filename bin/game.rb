@@ -11,8 +11,8 @@ class Interface
 
   def start
     puts ' '
-    puts '********* TIC TAC TOE ***********'
-    puts 'Welcome to Game with Artificial Intelligence!'
+    puts '********* MASTERPRO.WS PROJECT ***********'
+    puts 'Welcome to Tic Tac Toe with Artificial Intelligence!'
     puts '--------------------------------'
     @player1 = 'Human'
     @player2 = 'AI'
@@ -88,29 +88,33 @@ end
       fann_results_array = []
       unacceptable_moves_array = []
       array_of_moves_to_fork = []
-      attack_moves_array = []
+      angle_attack_moves_array = []
       current_position = @game.board.to_s
       # Create a list of unacceptable moves and a list of moves leading to fork:
       CSV.foreach('ss.csv', headers: false) do |row|
         row.each do |e|
           next unless e == current_position
+
           if row[6].to_i - row[3].to_i == 2 && row[4] == 'O' && row[2].to_f != 0.2
             unacceptable_moves_array << row[0]
           end
           next if row[5].nil?
+
           # Find moves that may lead to a fork:
           array_of_moves_to_fork << row[0] if row[3].to_i == row[5].to_i
           # Find attacking moves:
           if row[3].to_i == row[5].to_i && row[6].to_i < 7 && row[0].to_i.odd?
-            attack_moves_array << row[0]
-            end
+            angle_attack_moves_array << row[0]
+          end
         end
       end
 
       print "\n"
-      print "\n Unacceptable moves: " + unacceptable_moves_array.uniq.to_s + "\n"
-      print "\n List of moves leading to fork: " + array_of_moves_to_fork.uniq.to_s + "\n"
-      print "\n Attack moves: " + attack_moves_array.uniq.to_s + "\n"
+      [[unacceptable_moves_array, "\n Unacceptable moves: "],
+       [array_of_moves_to_fork, "\n List of moves leading to fork: "],
+       [angle_attack_moves_array, "\n Angle attack moves: "]].each do |i|
+        print i[1] + i[0].uniq.to_s + "\n" if i[0].any?
+      end
       print "\n"
 
       CSV.foreach('ss.csv', headers: false) do |row|
@@ -121,13 +125,13 @@ end
               x_data.push([row[0].to_i])
               y_data.push([1])
             elsif row[6].to_i - row[3].to_i == 3
-              if attack_moves_array.include? (row[0])
+              if angle_attack_moves_array.include? (row[0])
                 x_data.push([row[0].to_i])
                 y_data.push([0.7])
               elsif array_of_moves_to_fork.include? (row[0])
                 x_data.push([row[0].to_i])
                 y_data.push([0.3])
-            end
+              end
             else
               x_data.push([row[0].to_i])
               y_data.push([row[2].to_f])
@@ -154,7 +158,7 @@ end
       end
 
       print "\n x_data=" + x_data.to_s
-      print "\n FANN results" + fann_results_array.to_s
+      print "\n FANN results: " + fann_results_array.to_s
       result = x_data[fann_results_array.index(fann_results_array.max)]
       puts ''
       puts "\n AI MOVE: " + result[0].to_s

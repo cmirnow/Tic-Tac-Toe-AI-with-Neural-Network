@@ -79,76 +79,87 @@ end
     end
   end
 
+  def nn_arrays
+    unacceptable_moves_array = []
+    array_of_moves_to_fork = []
+    angle_attack_moves_array = []
+    current_position = @game.board.to_s
+    # Create a list of unacceptable moves and a list of moves leading to fork:
+    CSV.foreach('ss.csv', headers: false) do |row|
+      row.each do |e|
+        next unless e == current_position
+        if row[6].to_i - row[3].to_i == 2 && row[4] == 'O' && row[2].to_f != 0.2
+          unacceptable_moves_array << row[0]
+        end
+        next if row[5].nil?
+        # Find moves that may lead to a fork:
+        array_of_moves_to_fork << row[0] if row[3].to_i == row[5].to_i
+        # Find attacking moves:
+        if row[3].to_i == row[5].to_i && row[6].to_i < 7 && row[0].to_i.odd?
+          angle_attack_moves_array << row[0]
+        end
+      end
+    end
+    [unacceptable_moves_array, array_of_moves_to_fork, angle_attack_moves_array]
+    end
+
+  def print_info(a, b, c)
+    print "\n"
+    [[a, "\n Unacceptable moves: "],
+     [b, "\n List of moves leading to fork: "],
+     [c, "\n Angle attack moves: "]].each do |i|
+      print i[1] + i[0].uniq.to_s + "\n" if i[0].any?
+    end
+    print "\n"
+  end
+
+  def nn_data
+    current_position = @game.board.to_s
+    x_data = []
+    y_data = []
+    arrays = nn_arrays
+    print_info(arrays[0], arrays[1], arrays[2])
+    CSV.foreach('ss.csv', headers: false) do |row|
+      row.each do |e|
+        next unless e == current_position
+        unless arrays[0].include? (row[0])
+          if row[6].to_i - row[3].to_i == 1
+            x_data.push([row[0].to_i])
+            y_data.push([1])
+          elsif row[6].to_i - row[3].to_i == 3
+            if arrays[2].include? (row[0])
+              x_data.push([row[0].to_i])
+              y_data.push([0.7])
+            elsif arrays[1].include? (row[0])
+              x_data.push([row[0].to_i])
+              y_data.push([0.3])
+            end
+          else
+            x_data.push([row[0].to_i])
+            y_data.push([row[2].to_f])
+          end
+        end
+      end
+    end
+    [x_data, y_data]
+  end
+
   def neural_network
     if @game.counter == 1
       first_move
     else
-      x_data = []
-      y_data = []
+      data = nn_data
       fann_results_array = []
-      unacceptable_moves_array = []
-      array_of_moves_to_fork = []
-      angle_attack_moves_array = []
-      current_position = @game.board.to_s
-      # Create a list of unacceptable moves and a list of moves leading to fork:
-      CSV.foreach('ss.csv', headers: false) do |row|
-        row.each do |e|
-          next unless e == current_position
-
-          if row[6].to_i - row[3].to_i == 2 && row[4] == 'O' && row[2].to_f != 0.2
-            unacceptable_moves_array << row[0]
-          end
-          next if row[5].nil?
-
-          # Find moves that may lead to a fork:
-          array_of_moves_to_fork << row[0] if row[3].to_i == row[5].to_i
-          # Find attacking moves:
-          if row[3].to_i == row[5].to_i && row[6].to_i < 7 && row[0].to_i.odd?
-            angle_attack_moves_array << row[0]
-          end
-        end
-      end
-
-      print "\n"
-      [[unacceptable_moves_array, "\n Unacceptable moves: "],
-       [array_of_moves_to_fork, "\n List of moves leading to fork: "],
-       [angle_attack_moves_array, "\n Angle attack moves: "]].each do |i|
-        print i[1] + i[0].uniq.to_s + "\n" if i[0].any?
-      end
-      print "\n"
-
-      CSV.foreach('ss.csv', headers: false) do |row|
-        row.each do |e|
-          next unless e == current_position
-          unless unacceptable_moves_array.include? (row[0])
-            if row[6].to_i - row[3].to_i == 1
-              x_data.push([row[0].to_i])
-              y_data.push([1])
-            elsif row[6].to_i - row[3].to_i == 3
-              if angle_attack_moves_array.include? (row[0])
-                x_data.push([row[0].to_i])
-                y_data.push([0.7])
-              elsif array_of_moves_to_fork.include? (row[0])
-                x_data.push([row[0].to_i])
-                y_data.push([0.3])
-              end
-            else
-              x_data.push([row[0].to_i])
-              y_data.push([row[2].to_f])
-            end
-          end
-        end
-      end
 
       begin
-        train = RubyFann::TrainData.new(inputs: x_data, desired_outputs: y_data)
+        train = RubyFann::TrainData.new(inputs: data[0], desired_outputs: data[1])
         model = RubyFann::Standard.new(
           num_inputs: 1,
           hidden_neurons: [4],
           num_outputs: 1
         )
         model.train_on_data(train, 5000, 500, 0.01)
-        x_data.flatten.each do |i|
+        data[0].flatten.each do |i|
           fann_results_array << model.run([i])
         end
       rescue StandardError
@@ -157,9 +168,9 @@ end
         exit
       end
 
-      print "\n x_data=" + x_data.to_s
+      print "\n x_data=" + data[0].to_s
       print "\n FANN results: " + fann_results_array.to_s
-      result = x_data[fann_results_array.index(fann_results_array.max)]
+      result = data[0][fann_results_array.index(fann_results_array.max)]
       puts ''
       puts "\n AI MOVE: " + result[0].to_s
       puts ''

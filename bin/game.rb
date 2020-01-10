@@ -21,10 +21,6 @@ class Interface
     display_board
   end
 
-  def final
-    puts 'Thank you for playing Tic Tac Toe'
-end
-
   def display_board
     puts " #{@game.board[0]} | #{@game.board[1]} | #{@game.board[2]} "
     puts ' ---------- '
@@ -56,12 +52,12 @@ end
     turn until @game.total
     if @game.won?
       if @game.who_has_won? == :X
-        puts "CONGRATULATIONS #{@player1}! You Won"
+        puts "\nCongratulations, Human! You Won."
       else
-        puts "CONGRATULATIONS #{@player2}! You Won"
+        puts "\nCongratulations, AI! You Won."
       end
     elsif @game.draw?
-      puts "It's a draw!"
+      puts "\nGame over! Draw."
     end
   end
 
@@ -84,10 +80,12 @@ end
     CSV.foreach('ss.csv', headers: false) do |row|
       row.each do |e|
         next unless e == current_position
+
         if row[6].to_i - row[3].to_i == 2 && row[4] == 'O' && row[2].to_f != 0.2
           unacceptable_moves_array << row[0]
         end
         next if row[5].nil?
+
         # Find moves that may lead to a fork:
         array_of_moves_to_fork << row[0] if row[3].to_i == row[5].to_i
         # Find attacking moves:
@@ -130,6 +128,7 @@ end
     CSV.foreach('ss.csv', headers: false) do |row|
       row.each do |e|
         next unless e == current_position
+
         unless arrays[0].include? (row[0])
           if row[6].to_i - row[3].to_i == 1
             x_data.push([row[0].to_i])
@@ -152,31 +151,35 @@ end
     [x_data, y_data]
   end
 
+  def run
+    data = nn_data
+    fann_results_array = []
+    begin
+      train = RubyFann::TrainData.new(inputs: data[0], desired_outputs: data[1])
+      model = RubyFann::Standard.new(
+        num_inputs: 1,
+        hidden_neurons: [4],
+        num_outputs: 1
+      )
+      model.train_on_data(train, 5000, 500, 0.01)
+      data[0].flatten.each do |i|
+        fann_results_array << model.run([i])
+      end
+    rescue StandardError
+      []
+      print_info_2
+      exit
+    end
+    result = data[0][fann_results_array.index(fann_results_array.max)]
+    print_info_1(data[0], fann_results_array, result[0])
+    result[0]
+  end
+
   def neural_network
     if @game.counter == 1
       first_move
     else
-      data = nn_data
-      fann_results_array = []
-      begin
-        train = RubyFann::TrainData.new(inputs: data[0], desired_outputs: data[1])
-        model = RubyFann::Standard.new(
-          num_inputs: 1,
-          hidden_neurons: [4],
-          num_outputs: 1
-        )
-        model.train_on_data(train, 5000, 500, 0.01)
-        data[0].flatten.each do |i|
-          fann_results_array << model.run([i])
-        end
-      rescue StandardError
-        []
-        print_info_2
-        exit
-      end
-      result = data[0][fann_results_array.index(fann_results_array.max)]
-      print_info_1(data[0], fann_results_array, result[0])
-      result[0]
+      run
     end
   end
 end
@@ -184,4 +187,3 @@ end
 game = Interface.new
 game.start
 game.play
-game.final

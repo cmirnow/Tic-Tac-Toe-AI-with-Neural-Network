@@ -27,13 +27,9 @@ end
 
   def display_board
     puts " #{@game.board[0]} | #{@game.board[1]} | #{@game.board[2]} "
-
     puts ' ---------- '
-
     puts " #{@game.board[3]} | #{@game.board[4]} | #{@game.board[5]} "
-
     puts ' ---------- '
-
     puts " #{@game.board[6]} | #{@game.board[7]} | #{@game.board[8]} "
   end
 
@@ -113,6 +109,18 @@ end
     print "\n"
   end
 
+  def print_info_1(a, b, c)
+    print "\n x_data=" + a.to_s
+    print "\n FANN results: " + b.to_s
+    puts ''
+    puts "\n AI MOVE: " + c.to_s
+    puts ''
+  end
+
+  def print_info_2
+    puts "\n AI sees no way to continue the game. :( Try deleting ss.csv and run the program again."
+  end
+
   def nn_data
     current_position = @game.board.to_s
     x_data = []
@@ -150,7 +158,6 @@ end
     else
       data = nn_data
       fann_results_array = []
-
       begin
         train = RubyFann::TrainData.new(inputs: data[0], desired_outputs: data[1])
         model = RubyFann::Standard.new(
@@ -164,16 +171,11 @@ end
         end
       rescue StandardError
         []
-        puts "\n AI sees no way to continue the game. :( Try deleting ss.csv and run the program again."
+        print_info_2
         exit
       end
-
-      print "\n x_data=" + data[0].to_s
-      print "\n FANN results: " + fann_results_array.to_s
       result = data[0][fann_results_array.index(fann_results_array.max)]
-      puts ''
-      puts "\n AI MOVE: " + result[0].to_s
-      puts ''
+      print_info_1(data[0], fann_results_array, result[0])
       result[0]
     end
   end

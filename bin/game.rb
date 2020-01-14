@@ -2,7 +2,9 @@
 
 require 'ruby-fann'
 require 'csv'
+require 'progress_bar'
 require_relative '../lib/game_board.rb'
+require_relative '../lib/progress_bar.rb'
 
 class Interface
   def initialize
@@ -17,24 +19,24 @@ class Interface
     @player1 = 'Human'
     @player2 = 'AI'
     puts "Player X is #{@player1} & Player O is #{@player2}"
-    puts ' '
     display_board
   end
 
   def display_board
+    puts "\n"
     puts " #{@game.board[0]} | #{@game.board[1]} | #{@game.board[2]} "
     puts ' ---------- '
     puts " #{@game.board[3]} | #{@game.board[4]} | #{@game.board[5]} "
     puts ' ---------- '
     puts " #{@game.board[6]} | #{@game.board[7]} | #{@game.board[8]} "
+    puts "\n"
   end
 
   def turn
     if @game.current_player == :X
-      print "\n #{@player1}, choose a position between 1-9: "
+      print "#{@player1}, choose a position between 1-9: "
       spot = gets.strip
     else
-      print "\n AI works. Please wait..."
       spot = neural_network
     end
     spot = @game.board_index(spot)
@@ -52,23 +54,32 @@ class Interface
     turn until @game.total
     if @game.won?
       if @game.who_has_won? == :X
-        puts "\nCongratulations, Human! You Won."
+        puts 'Congratulations, Human! You Won.'
       else
-        puts "\nCongratulations, AI! You Won."
+        puts 'Congratulations, AI! You Won.'
       end
     elsif @game.draw?
-      puts "\nGame over! Draw."
+      puts 'Game over! Draw.'
     end
   end
 
   def first_move
+    progress
     if !@game.place?(4)
-      puts 5
+      puts "\nAI MOVE: 5"
       5
     else
-      puts 1
+      puts "\nAI MOVE: 1"
       1
     end
+  end
+
+  def progress
+    0.step(80, 5) do |i|
+      printf("\rAI works. Please wait... [%-16s]", '#' * (i / 5))
+      sleep(0.1)
+    end
+    puts
   end
 
   def nn_arrays
@@ -76,16 +87,15 @@ class Interface
     array_of_moves_to_fork = []
     angle_attack_moves_array = []
     current_position = @game.board.to_s
+    print_info_3
     # Create a list of unacceptable moves and a list of moves leading to fork:
-    CSV.foreach('ss.csv', headers: false) do |row|
+    CSV::WithProgressBar.foreach('ss.csv', headers: false) do |row|
       row.each do |e|
         next unless e == current_position
-
         if row[6].to_i - row[3].to_i == 2 && row[4] == 'O' && row[2].to_f != 0.2
           unacceptable_moves_array << row[0]
         end
         next if row[5].nil?
-
         # Find moves that may lead to a fork:
         array_of_moves_to_fork << row[0] if row[3].to_i == row[5].to_i
         # Find attacking moves:
@@ -112,11 +122,14 @@ class Interface
     print "\n FANN results: " + b.to_s
     puts ''
     puts "\n AI MOVE: " + c.to_s
-    puts ''
   end
 
   def print_info_2
     puts "\n AI sees no way to continue the game. :( Try deleting ss.csv and run the program again."
+  end
+
+  def print_info_3
+    puts 'AI works. Please wait...'
   end
 
   def nn_data
@@ -125,7 +138,8 @@ class Interface
     y_data = []
     arrays = nn_arrays
     print_info(arrays[0], arrays[1], arrays[2])
-    CSV.foreach('ss.csv', headers: false) do |row|
+    print_info_3
+    CSV::WithProgressBar.foreach('ss.csv', headers: false) do |row|
       row.each do |e|
         next unless e == current_position
 

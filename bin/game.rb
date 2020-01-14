@@ -142,7 +142,6 @@ class Interface
     CSV::WithProgressBar.foreach('ss.csv', headers: false) do |row|
       row.each do |e|
         next unless e == current_position
-
         unless arrays[0].include? (row[0])
           if row[6].to_i - row[3].to_i == 1
             x_data.push([row[0].to_i])

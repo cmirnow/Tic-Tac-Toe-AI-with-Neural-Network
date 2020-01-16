@@ -28,6 +28,19 @@ class GameBoard
     end
   end
 
+  DANGEROUS_SITUATIONS = [
+    [6, 4, 2],
+    [0, 4, 8]
+  ].freeze
+
+  def fork_danger?
+    DANGEROUS_SITUATIONS.detect do |x|
+      @board[x[0]] == @board[x[2]] &&
+        @board[x[0]] != @board[x[1]] &&
+        @board[x[0]].class == @board[x[1]].class
+    end
+  end
+
   # Find a fork:
   def fork?
     WINNING_TRIADS.select do |x|

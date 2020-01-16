@@ -88,11 +88,14 @@ class Interface
     angle_attack_moves_array = []
     current_position = @game.board.to_s
     print_info_3
-    # Create a list of unacceptable moves and a list of moves leading to fork:
+    # Create a list of unacceptable moves, a list of moves leading to fork, a list of attacking moves:
     CSV::WithProgressBar.foreach('ss.csv', headers: false) do |row|
       row.each do |e|
         next unless e == current_position
         if row[6].to_i - row[3].to_i == 2 && row[4] == 'O' && row[2].to_f != 0.2
+          unacceptable_moves_array << row[0]
+        # Find moves that inevitably lead to a fork:
+        elsif fork_danger? && row[3].to_i == 3 && row[0].to_i.odd?
           unacceptable_moves_array << row[0]
         end
         next if row[5].nil?
@@ -105,7 +108,11 @@ class Interface
       end
     end
     [unacceptable_moves_array, array_of_moves_to_fork, angle_attack_moves_array]
-    end
+  end
+
+  def fork_danger?
+    @game.fork_danger?
+  end
 
   def print_info(a, b, c)
     print "\n"

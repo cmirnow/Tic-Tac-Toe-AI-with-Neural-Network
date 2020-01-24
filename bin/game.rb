@@ -3,6 +3,7 @@
 require 'ruby-fann'
 require 'csv'
 require 'progress_bar'
+require 'tty-pie'
 require_relative '../lib/game_board.rb'
 require_relative '../lib/progress_bar.rb'
 
@@ -92,6 +93,7 @@ class Interface
     CSV::WithProgressBar.foreach('ss.csv', headers: false) do |row|
       row.each do |e|
         next unless e == current_position
+
         if row[6].to_i - row[3].to_i == 2 && row[4] == 'O' && row[2].to_f != 0.2
           unacceptable_moves_array << row[0]
         # Find moves that inevitably lead to a fork:
@@ -99,6 +101,7 @@ class Interface
           unacceptable_moves_array << row[0]
         end
         next if row[5].nil?
+
         # Find moves that may lead to a fork:
         array_of_moves_to_fork << row[0] if row[3].to_i == row[5].to_i
         # Find attacking moves:
@@ -125,8 +128,10 @@ class Interface
   end
 
   def print_info_1(a, b, c)
-    print "\n x_data=" + a.to_s
-    print "\n FANN results: " + b.to_s
+    print "\n x_data=" + a.to_s + "\n"
+    print "\n FANN results: " + b.to_s + "\n"
+    puts ''
+    chart(a, b)
     puts ''
     puts "\n AI MOVE: " + c.to_s
   end
@@ -139,6 +144,18 @@ class Interface
     puts 'AI works. Please wait...'
   end
 
+  def chart(a, b)
+    tmp = []
+    colors = %i[cyan red green yellow white magenta]
+    data = [
+      a.zip(b).uniq.each_with_index do |i, index|
+        tmp << { name: i[0].join.to_i, value: i[1].join.to_f, color: colors[index], fill: i[0].join.to_s }
+      end
+    ]
+    pie_chart = TTY::Pie.new(data: tmp, radius: 5, legend: { format: '%<label>s %<percent>.2f%%' })
+    print pie_chart
+  end
+
   def nn_data
     current_position = @game.board.to_s
     x_data = []
@@ -149,6 +166,7 @@ class Interface
     CSV::WithProgressBar.foreach('ss.csv', headers: false) do |row|
       row.each do |e|
         next unless e == current_position
+
         unless arrays[0].include? (row[0])
           if row[6].to_i - row[3].to_i == 1
             x_data.push([row[0].to_i])

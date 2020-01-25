@@ -152,7 +152,7 @@ class Interface
         tmp << { name: i[0].join.to_i, value: i[1].join.to_f, color: colors[index], fill: i[0].join.to_s }
       end
     ]
-    pie_chart = TTY::Pie.new(data: tmp, radius: 5, legend: { format: '%<label>s %<percent>.2f%%' })
+    pie_chart = TTY::Pie.new(data: tmp, radius: 6, legend: { format: '%<label>s %<percent>.2f%%' })
     print pie_chart
   end
 

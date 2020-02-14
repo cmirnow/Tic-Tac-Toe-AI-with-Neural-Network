@@ -25,7 +25,7 @@ class Interface
 
   def progress
     0.step(40, 8) do |i|
-      printf('The Artificial Intelligence training process works: [%-5s]', '*' * (i / 8))
+      printf("\rThe Artificial Intelligence training process works: [%-5s]", '*' * (i / 8))
     end
   end
 

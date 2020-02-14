@@ -19,9 +19,14 @@ class Interface
   end
 
   def start
-    puts 'The Artificial Intelligence training process works...'
-    puts 'Please wait...'
+    progress
     auxiliary
+  end
+
+  def progress
+    0.step(40, 8) do |i|
+      printf('The Artificial Intelligence training process works: [%-5s]', '*' * (i / 8))
+    end
   end
 
   def auxiliary
@@ -71,4 +76,4 @@ class Interface
       'draw'
     end
   end
-  end
+end

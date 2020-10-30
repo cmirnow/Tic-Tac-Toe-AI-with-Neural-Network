@@ -39,7 +39,7 @@ class Interface
       print "#{@player1}, choose a position between 1-9: "
       spot = gets.strip
     else
-      spot = AI.neural_network(@game.counter, @game.place?(4), @game.board, @game.fork_danger?)
+      spot = AI.neural_network(@game.counter, @game.place?(4), @game.board, @game.fork_danger_1?, @game.fork_danger_2?)
     end
     spot = @game.board_index(spot)
     if @game.move_allowed?(spot)

@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 class AI
-  def self.neural_network(counter, place_4, board, fork_danger)
+  def self.neural_network(counter, place_4, board, fork_danger_1, fork_danger_2)
     if counter == 1
       first_move(place_4)
     else
-      run(board, fork_danger)
+      run(board, fork_danger_1, fork_danger_2)
     end
   end
 
@@ -20,8 +20,8 @@ class AI
     end
   end
 
-  def self.run(board, fork_danger)
-    data = nn_data(board, fork_danger)
+  def self.run(board, fork_danger_1, fork_danger_2)
+    data = nn_data(board, fork_danger_1, fork_danger_2)
     fann_results_array = []
     begin
       train = RubyFann::TrainData.new(inputs: data[0], desired_outputs: data[1])
@@ -44,26 +44,26 @@ class AI
     result[0]
   end
 
-  def self.nn_data(board, fork_danger)
+  def self.nn_data(board, fork_danger_1, fork_danger_2)
     current_position = board.to_s
     x_data = []
     y_data = []
-    arrays = nn_arrays(board, fork_danger)
+    arrays = nn_arrays(board, fork_danger_1, fork_danger_2)
     print_info(arrays[0], arrays[1], arrays[2])
     print_info_3
     CSV::WithProgressBar.foreach('ss.csv', headers: false) do |row|
       row.each do |e|
         next unless e == current_position
 
-        unless arrays[0].include? (row[0])
+        unless arrays[0].include?(row[0])
           if row[6].to_i - row[3].to_i == 1
             x_data.push([row[0].to_i])
             y_data.push([1])
           elsif row[6].to_i - row[3].to_i == 3
-            if arrays[2].include? (row[0])
+            if arrays[2].include?(row[0])
               x_data.push([row[0].to_i])
               y_data.push([0.7])
-            elsif arrays[1].include? (row[0])
+            elsif arrays[1].include?(row[0])
               x_data.push([row[0].to_i])
               y_data.push([0.3])
             end
@@ -77,7 +77,7 @@ class AI
     [x_data, y_data]
   end
 
-  def self.nn_arrays(board, fork_danger)
+  def self.nn_arrays(board, fork_danger_1, fork_danger_2)
     unacceptable_moves_array = []
     array_of_moves_to_fork = []
     angle_attack_moves_array = []
@@ -91,7 +91,9 @@ class AI
         if row[6].to_i - row[3].to_i == 2 && row[4] == 'O' && row[2].to_f != 0.2
           unacceptable_moves_array << row[0]
         # Find moves that inevitably lead to a fork:
-        elsif fork_danger && row[3].to_i == 3 && row[0].to_i.odd?
+        elsif fork_danger_1 && row[3].to_i == 3 && row[0].to_i.odd?
+          unacceptable_moves_array << row[0]
+        elsif fork_danger_2 && row[3].to_i == 3 && row[0].to_i.even?
           unacceptable_moves_array << row[0]
         end
         next if row[5].nil?
@@ -99,9 +101,7 @@ class AI
         # Find moves that may lead to a fork:
         array_of_moves_to_fork << row[0] if row[3].to_i == row[5].to_i
         # Find attacking moves:
-        if row[3].to_i == row[5].to_i && row[6].to_i < 7 && row[0].to_i.odd?
-          angle_attack_moves_array << row[0]
-        end
+        angle_attack_moves_array << row[0] if row[3].to_i == row[5].to_i && row[6].to_i < 7 && row[0].to_i.odd?
       end
     end
     [unacceptable_moves_array, array_of_moves_to_fork, angle_attack_moves_array]

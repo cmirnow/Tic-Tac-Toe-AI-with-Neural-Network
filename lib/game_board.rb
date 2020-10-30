@@ -28,13 +28,32 @@ class GameBoard
     end
   end
 
-  DANGEROUS_SITUATIONS = [
+  DANGEROUS_SITUATIONS_1 = [
     [6, 4, 2],
     [0, 4, 8]
   ].freeze
 
-  def fork_danger?
-    DANGEROUS_SITUATIONS.detect do |x|
+  DANGEROUS_SITUATIONS_2 = [
+    [0, 4, 7],
+    [0, 4, 5],
+    [2, 4, 3],
+    [2, 4, 7],
+    [3, 4, 8],
+    [1, 4, 8],
+    [1, 4, 6],
+    [5, 4, 6]
+  ].freeze
+
+  def fork_danger_1?
+    DANGEROUS_SITUATIONS_1.detect do |x|
+      @board[x[0]] == @board[x[2]] &&
+        @board[x[0]] != @board[x[1]] &&
+        @board[x[0]].class == @board[x[1]].class
+    end
+  end
+
+  def fork_danger_2?
+    DANGEROUS_SITUATIONS_2.detect do |x|
       @board[x[0]] == @board[x[2]] &&
         @board[x[0]] != @board[x[1]] &&
         @board[x[0]].class == @board[x[1]].class

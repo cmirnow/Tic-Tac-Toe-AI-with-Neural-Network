@@ -17,7 +17,7 @@ class Interface
   def load_data
     print_info
     # Game data is loaded from the CSV file into an array
-    @from_csv_to_array = CSV::WithProgressBar.read('ss.csv').each.to_a
+    @array_of_games = CSV::WithProgressBar.read('ss.csv').each.to_a
   end
 
   def start
@@ -46,7 +46,14 @@ class Interface
       print "#{@player1}, choose a position between 1-9: "
       spot = gets.strip
     else
-      spot = AI.neural_network(@game.counter, @game.place?(4), @game.board, @game.fork_danger_1?, @game.fork_danger_2?, @from_csv_to_array)
+      spot = AI.neural_network(
+        @game.counter, 
+        @game.place?(4), 
+        @game.board, 
+        @game.fork_danger_1?, 
+        @game.fork_danger_2?, 
+        @array_of_games
+        )
     end
     spot = @game.board_index(spot)
     if @game.move_allowed?(spot)

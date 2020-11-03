@@ -7,7 +7,7 @@ total_number_moves = []
 resulting_array = []
 
 # You can change the number of training parties:
-35_000.times do
+50_000.times do
   game = Interface.new
   game.start
   game.play

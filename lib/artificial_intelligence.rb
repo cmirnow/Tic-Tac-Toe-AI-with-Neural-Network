@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 class AI
-  def self.neural_network(counter, place_4, board, fork_danger_1, fork_danger_2)
+  def self.neural_network(counter, place_4, board, fork_danger_1, fork_danger_2, rows_array)
     if counter == 1
       first_move(place_4)
     else
-      run(board, fork_danger_1, fork_danger_2)
+      run(board, fork_danger_1, fork_danger_2, rows_array)
     end
   end
 
@@ -20,8 +20,8 @@ class AI
     end
   end
 
-  def self.run(board, fork_danger_1, fork_danger_2)
-    data = nn_data(board, fork_danger_1, fork_danger_2)
+  def self.run(board, fork_danger_1, fork_danger_2, rows_array)
+    data = nn_data(board, fork_danger_1, fork_danger_2, rows_array)
     fann_results_array = []
     begin
       train = RubyFann::TrainData.new(inputs: data[0], desired_outputs: data[1])
@@ -44,14 +44,13 @@ class AI
     result[0]
   end
 
-  def self.nn_data(board, fork_danger_1, fork_danger_2)
+  def self.nn_data(board, fork_danger_1, fork_danger_2, rows_array)
     current_position = board.to_s
     x_data = []
     y_data = []
-    arrays = nn_arrays(board, fork_danger_1, fork_danger_2)
+    arrays = nn_arrays(board, fork_danger_1, fork_danger_2, rows_array)
     print_info(arrays[0], arrays[1], arrays[2])
-    print_info_3
-    CSV::WithProgressBar.foreach('ss.csv', headers: false) do |row|
+    rows_array.each do |row|
       row.each do |e|
         next unless e == current_position
 
@@ -77,14 +76,13 @@ class AI
     [x_data, y_data]
   end
 
-  def self.nn_arrays(board, fork_danger_1, fork_danger_2)
+  def self.nn_arrays(board, fork_danger_1, fork_danger_2, rows_array)
     unacceptable_moves_array = []
     array_of_moves_to_fork = []
     angle_attack_moves_array = []
     current_position = board.to_s
-    print_info_3
     # Create a list of unacceptable moves, a list of moves leading to fork, a list of attacking moves:
-    CSV::WithProgressBar.foreach('ss.csv', headers: false) do |row|
+    rows_array.each do |row|
       row.each do |e|
         next unless e == current_position
 
@@ -108,10 +106,9 @@ class AI
   end
 
   def self.print_info(a, b, c)
-    print "\n"
-    [[a, "\n Unacceptable moves: "],
-     [b, "\n List of moves leading to fork: "],
-     [c, "\n Angle attack moves: "]].each do |i|
+    [[a, 'Unacceptable moves: '],
+     [b, 'List of moves leading to fork: '],
+     [c, 'Angle attack moves: ']].each do |i|
       print i[1] + i[0].uniq.to_s + "\n" if i[0].any?
     end
     print "\n"
@@ -130,13 +127,9 @@ class AI
     puts "\n AI sees no way to continue the game. :( Try deleting ss.csv and run the program again."
   end
 
-  def self.print_info_3
-    puts 'AI works. Please wait...'
-  end
-
   def self.progress
-    0.step(80, 5) do |i|
-      printf("\rAI works. Please wait... [%-16s]", '#' * (i / 5))
+    0.step(40, 5) do |i|
+      printf("\rAI works. Please wait... [%-8s]", '#' * (i / 5))
       sleep(0.1)
     end
     puts

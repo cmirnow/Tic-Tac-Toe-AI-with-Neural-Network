@@ -11,6 +11,13 @@ require_relative '../lib/artificial_intelligence.rb'
 class Interface
   def initialize
     @game = GameBoard.new(@players)
+    load_data
+  end
+
+  def load_data
+    print_info
+    # Game data is loaded from the CSV file into an array
+    @from_csv_to_array = CSV::WithProgressBar.read('ss.csv').each.to_a
   end
 
   def start
@@ -39,7 +46,7 @@ class Interface
       print "#{@player1}, choose a position between 1-9: "
       spot = gets.strip
     else
-      spot = AI.neural_network(@game.counter, @game.place?(4), @game.board, @game.fork_danger_1?, @game.fork_danger_2?)
+      spot = AI.neural_network(@game.counter, @game.place?(4), @game.board, @game.fork_danger_1?, @game.fork_danger_2?, @from_csv_to_array)
     end
     spot = @game.board_index(spot)
     if @game.move_allowed?(spot)
@@ -63,6 +70,11 @@ class Interface
     elsif @game.draw?
       puts 'Game over! Draw.'
     end
+  end
+
+  def print_info
+    puts 'Loading data...'
+    puts 'Please wait.'
   end
 end
 

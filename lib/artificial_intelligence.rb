@@ -61,7 +61,7 @@ class AI
           elsif row[6].to_i - row[3].to_i == 3
             if arrays[2].include?(row[0])
               x_data.push([row[0].to_i])
-              y_data.push([0.7])
+              y_data.push([0.9])
             elsif arrays[1].include?(row[0])
               x_data.push([row[0].to_i])
               y_data.push([0.3])

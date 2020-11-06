@@ -11,22 +11,13 @@ require_relative '../lib/artificial_intelligence.rb'
 class Interface
   def initialize
     @game = GameBoard.new(@players)
-    load_data
-  end
-
-  def load_data
-    print_info
-    # Game data is loaded from the CSV file into an array
-    @array_of_games = CSV::WithProgressBar.read('ss.csv').each.to_a
   end
 
   def start
-    puts ' '
-    puts '********* MASTERPRO.WS PROJECT ***********'
-    puts 'Welcome to Tic Tac Toe with Artificial Intelligence!'
-    puts '--------------------------------'
     @player1 = 'Human'
     @player2 = 'AI'
+    puts ' '
+    puts 'New game! Press Ctrl + Z to finish.'
     puts "Player X is #{@player1} & Player O is #{@player2}"
     display_board
   end
@@ -47,13 +38,13 @@ class Interface
       spot = gets.strip
     else
       spot = AI.neural_network(
-        @game.counter, 
-        @game.place?(4), 
-        @game.board, 
-        @game.fork_danger_1?, 
-        @game.fork_danger_2?, 
-        @array_of_games
-        )
+        @game.counter,
+        @game.place?(4),
+        @game.board,
+        @game.fork_danger_1?,
+        @game.fork_danger_2?,
+        Starting::Array_of_games
+      )
     end
     spot = @game.board_index(spot)
     if @game.move_allowed?(spot)
@@ -77,14 +68,6 @@ class Interface
     elsif @game.draw?
       puts 'Game over! Draw.'
     end
-  end
-
-  def print_info
-    puts 'Loading data...'
-    puts 'Please wait.'
+    Starting.beginning_of_game
   end
 end
-
-game = Interface.new
-game.start
-game.play

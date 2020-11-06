@@ -54,7 +54,9 @@ class AI
       row.each do |e|
         next unless e == current_position
 
-        unless arrays[0].include?(row[0])
+        next if arrays[0].include?(row[0])
+
+        unless arrays[1].include?(row[0]) && !arrays[2].include?(row[0])
           if row[6].to_i - row[3].to_i == 1
             x_data.push([row[0].to_i])
             y_data.push([1])
@@ -79,7 +81,7 @@ class AI
   def self.nn_arrays(board, fork_danger_1, fork_danger_2, array_of_games)
     unacceptable_moves_array = []
     array_of_moves_to_fork = []
-    angle_attack_moves_array = []
+    attack_moves_array = []
     current_position = board.to_s
     # Create a list of unacceptable moves, a list of moves leading to fork, a list of attacking moves:
     array_of_games.each do |row|
@@ -99,16 +101,16 @@ class AI
         # Find moves that may lead to a fork:
         array_of_moves_to_fork << row[0] if row[3].to_i == row[5].to_i
         # Find attacking moves:
-        angle_attack_moves_array << row[0] if row[3].to_i == row[5].to_i && row[6].to_i < 7 && row[0].to_i.odd?
+        attack_moves_array << row[0] if row[3].to_i == row[5].to_i && row[6].to_i < 7 && row[0]
       end
     end
-    [unacceptable_moves_array, array_of_moves_to_fork, angle_attack_moves_array]
+    [unacceptable_moves_array, array_of_moves_to_fork, attack_moves_array]
   end
 
   def self.print_info(a, b, c)
     [[a, 'Unacceptable moves: '],
      [b, 'List of moves leading to fork: '],
-     [c, 'Angle attack moves: ']].each do |i|
+     [c, 'Attack moves: ']].each do |i|
       print i[1] + i[0].uniq.to_s + "\n" if i[0].any?
     end
     print "\n"

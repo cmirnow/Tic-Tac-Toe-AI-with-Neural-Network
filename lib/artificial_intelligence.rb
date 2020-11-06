@@ -37,7 +37,7 @@ class AI
     rescue StandardError
       []
       print_info_2
-      exit
+      Starting.beginning_of_game
     end
     result = data[0][fann_results_array.index(fann_results_array.max)]
     print_info_1(data[0], fann_results_array, result[0])

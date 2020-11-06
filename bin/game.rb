@@ -17,7 +17,7 @@ class Interface
     @player1 = 'Human'
     @player2 = 'AI'
     puts ' '
-    puts 'New game! Press Ctrl + Z to finish.'
+    puts 'New game! Press Ctrl + C to finish.'
     puts "Player X is #{@player1} & Player O is #{@player2}"
     display_board
   end

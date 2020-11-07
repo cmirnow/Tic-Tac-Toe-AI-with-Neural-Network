@@ -17,7 +17,8 @@ class Interface
     @player1 = 'Human'
     @player2 = 'AI'
     puts ' '
-    puts 'New game! Press Ctrl + C to finish.'
+    puts '--------------------------------'
+    puts 'New game! Press "q" to finish.'
     puts "Player X is #{@player1} & Player O is #{@player2}"
     display_board
   end
@@ -35,7 +36,7 @@ class Interface
   def turn
     if @game.current_player == :X
       print "#{@player1}, choose a position between 1-9: "
-      spot = gets.strip
+      spot = quit_game(gets.strip)
     else
       spot = AI.neural_network(
         @game.counter,
@@ -55,6 +56,15 @@ class Interface
       display_board
       turn
     end
+  end
+
+  def quit_game(spot)
+      if spot == 'q'
+        puts 'It was nice to play with you. Bye.'
+        exit
+      else
+        spot
+      end
   end
 
   def play

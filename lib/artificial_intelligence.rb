@@ -101,7 +101,7 @@ class AI
         # Find moves that may lead to a fork:
         array_of_moves_to_fork << row[0] if row[3].to_i == row[5].to_i
         # Find attacking moves:
-        attack_moves_array << row[0] if row[3].to_i == row[5].to_i && row[6].to_i < 7 && row[0]
+        attack_moves_array << row[0] if row[3].to_i == row[5].to_i && row[6].to_i < 7
       end
     end
     [unacceptable_moves_array, array_of_moves_to_fork, attack_moves_array]

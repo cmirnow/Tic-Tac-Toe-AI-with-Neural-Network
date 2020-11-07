@@ -59,12 +59,12 @@ class Interface
   end
 
   def quit_game(spot)
-      if spot == 'q'
-        puts 'It was nice to play with you. Bye.'
-        exit
-      else
-        spot
-      end
+    if spot == 'q'
+      puts 'It was nice to play with you. Bye.'
+      exit
+    else
+      spot
+    end
   end
 
   def play

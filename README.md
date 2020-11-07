@@ -8,6 +8,7 @@ A game of TicTacToe implemented using ruby-fann logic.
 How to start playing:
 
 ```bash
+gem install csv ruby-fann progress_bar tty-pie
 git clone https://github.com/cmirnow/Tic-Tac-Toe-AI-with-Neural-Network.git
 cd Tic-Tac-Toe-AI-with-Neural-Network
 ruby start.rb

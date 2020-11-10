@@ -73,6 +73,12 @@ class AI
             y_data.push([row[2].to_f])
           end
         end
+        next unless x_data.empty?
+
+        if arrays[1].include?(row[0])
+          x_data.push([row[0].to_i])
+          y_data.push([0.3])
+        end
       end
     end
     [x_data, y_data]

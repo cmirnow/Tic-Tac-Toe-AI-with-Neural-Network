@@ -47,16 +47,24 @@ class GameBoard
   def fork_danger_1?
     DANGEROUS_SITUATIONS_1.detect do |x|
       @board[x[0]] == @board[x[2]] &&
-        @board[x[0]] != @board[x[1]] &&
-        @board[x[0]].class == @board[x[1]].class
+        @board[x[0]] != @board[x[1]] #&&
+        #@board[x[0]].class == @board[x[1]].class
+    end
+  end
+
+  def fork_danger_3?
+    DANGEROUS_SITUATIONS_1.detect do |x|
+      @board[x[0]] != @board[x[2]] &&
+        @board[x[1]] == @board[x[2]] #&&
+        #@board[x[0]].class == @board[x[1]].class
     end
   end
 
   def fork_danger_2?
     DANGEROUS_SITUATIONS_2.detect do |x|
       @board[x[0]] == @board[x[2]] &&
-        @board[x[0]] != @board[x[1]] &&
-        @board[x[0]].class == @board[x[1]].class
+        @board[x[0]] != @board[x[1]] #&&
+        #@board[x[0]].class == @board[x[1]].class
     end
   end
 

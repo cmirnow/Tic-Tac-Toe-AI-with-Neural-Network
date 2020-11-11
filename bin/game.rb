@@ -44,6 +44,7 @@ class Interface
         @game.board,
         @game.fork_danger_1?,
         @game.fork_danger_2?,
+        @game.fork_danger_3?,
         Starting::Array_of_games
       )
     end

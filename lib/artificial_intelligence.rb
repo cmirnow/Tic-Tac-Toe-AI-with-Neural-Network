@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 class AI
-  def self.neural_network(counter, place_4, board, fork_danger_1, fork_danger_2, array_of_games)
+  def self.neural_network(counter, place_4, board, fork_danger_1, fork_danger_2, fork_danger_3, array_of_games)
     if counter == 1
       first_move(place_4)
     else
-      run(board, fork_danger_1, fork_danger_2, array_of_games)
+      run(board, fork_danger_1, fork_danger_2, fork_danger_3, array_of_games)
     end
   end
 
@@ -20,8 +20,8 @@ class AI
     end
   end
 
-  def self.run(board, fork_danger_1, fork_danger_2, array_of_games)
-    data = nn_data(board, fork_danger_1, fork_danger_2, array_of_games)
+  def self.run(board, fork_danger_1, fork_danger_2, fork_danger_3, array_of_games)
+    data = nn_data(board, fork_danger_1, fork_danger_2, fork_danger_3, array_of_games)
     fann_results_array = []
     begin
       train = RubyFann::TrainData.new(inputs: data[0], desired_outputs: data[1])
@@ -44,11 +44,11 @@ class AI
     result[0]
   end
 
-  def self.nn_data(board, fork_danger_1, fork_danger_2, array_of_games)
+  def self.nn_data(board, fork_danger_1, fork_danger_2, fork_danger_3, array_of_games)
     current_position = board.to_s
     x_data = []
     y_data = []
-    arrays = nn_arrays(board, fork_danger_1, fork_danger_2, array_of_games)
+    arrays = nn_arrays(board, fork_danger_1, fork_danger_2, fork_danger_3, array_of_games)
     print_info(arrays[0], arrays[1], arrays[2])
     array_of_games.each do |row|
       row.each do |e|
@@ -84,7 +84,7 @@ class AI
     [x_data, y_data]
   end
 
-  def self.nn_arrays(board, fork_danger_1, fork_danger_2, array_of_games)
+  def self.nn_arrays(board, fork_danger_1, fork_danger_2, fork_danger_3, array_of_games)
     unacceptable_moves_array = []
     array_of_moves_to_fork = []
     attack_moves_array = []
@@ -99,7 +99,7 @@ class AI
         # Find moves that inevitably lead to a fork:
         elsif fork_danger_1 && row[3].to_i == 3 && row[0].to_i.odd?
           unacceptable_moves_array << row[0]
-        elsif fork_danger_2 && row[3].to_i == 3 && row[0].to_i.even?
+        elsif (fork_danger_2 || fork_danger_3) && row[3].to_i == 3 && row[0].to_i.even?
           unacceptable_moves_array << row[0]
         end
         next if row[5].nil?

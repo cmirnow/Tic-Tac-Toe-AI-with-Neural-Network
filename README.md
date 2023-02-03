@@ -2,6 +2,9 @@
 
 [![Tic-Tac-Toe-AI-with-Neural-Network](https://github.com/cmirnow/Tic-Tac-Toe-AI-with-Neural-Network/blob/master/images/tictactoe.jpg)](https://masterpro.ws/neural-network-tictactoe)
 
+:sunglasses: | You can [try](https://github.com/cmirnow/Tic-Tac-Toe-AI-with-Neural-Network-Resurrections) an extended version of this app.
+:---: | :---  
+
 Tic Tac Toe using Artificial Intelligence & Neural Network.
 A game of TicTacToe implemented using ruby-fann logic.
 
